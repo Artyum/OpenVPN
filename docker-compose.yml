@@ -1,0 +1,51 @@
+---
+services:
+  openvpn:
+    image: huculski/openvpn-server:latest
+    container_name: openvpn-server
+    restart: unless-stopped
+    network_mode: host
+    devices:
+      - /dev/net/tun
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - openvpn-data:/etc/openvpn
+      - ./config/server.conf:/etc/openvpn/server/server.conf
+      - ./openvpn-logs:/var/log/openvpn
+      - ./client:/etc/openvpn/client
+    environment:
+      - VPN_SUBNET
+      - LAN_SUBNET
+      - VPN_PORT
+      - VPN_IFACE
+      - EASYRSA_REQ_COUNTRY
+      - EASYRSA_REQ_PROVINCE
+      - EASYRSA_REQ_CITY
+      - EASYRSA_REQ_ORG
+      - EASYRSA_REQ_EMAIL
+      - EASYRSA_REQ_OU
+      - EASYRSA_ALGO
+      - EASYRSA_DIGEST
+
+  openvpn-monitor:
+    image: ruimarinho/openvpn-monitor
+    container_name: openvpn-monitor
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      OPENVPNMONITOR_DEFAULT_DATETIMEFORMAT: "%d/%m/%Y"
+      OPENVPNMONITOR_DEFAULT_MAPS: "True"
+      OPENVPNMONITOR_DEFAULT_MAPSHEIGHT: "500"
+      OPENVPNMONITOR_DEFAULT_SITE: "OpenVPN"
+      OPENVPNMONITOR_SITES_0_ALIAS: "OpenVPN"
+      OPENVPNMONITOR_SITES_0_NAME: "OpenVPN"
+      OPENVPNMONITOR_SITES_0_HOST: "host.docker.internal"
+      OPENVPNMONITOR_SITES_0_PORT: "5555"
+      OPENVPNMONITOR_SITES_0_SHOWDISCONNECT: "True"
+    ports:
+      - "11940:80"
+
+volumes:
+  openvpn-data:

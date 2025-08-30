@@ -1,0 +1,6 @@
+/openvpn-logs
+/client
+/.vscode
+.env
+*.txt
+/*.sh
