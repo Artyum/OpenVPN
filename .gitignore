@@ -1,6 +1,9 @@
 /openvpn-logs
 /client
 /.vscode
-.env
+/dev
 *.txt
-/*.sh
+.env*
+!.env_example
+auto_rebuild.*
+!auto_rebuild.sh
